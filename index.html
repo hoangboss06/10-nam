@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Khởi động: 10 Năm Nữa Nghề Nào Thay Đổi Mạnh Nhất?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #0b132b;
+      --bg-card: #1c2541;
+      --bg-card-hover: #253256;
+      --accent-cyan: #00f5d4;
+      --accent-blue: #3a86ff;
+      --accent-amber: #ffbe0b;
+      --accent-pink: #ff006e;
+      --accent-green: #06d6a0;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top right, #1b2a4a 0%, var(--bg-dark) 65%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      background: rgba(11, 19, 43, 0.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .badge-tag {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      color: #051923;
+      font-weight: 800;
+      font-size: 0.76rem;
+      padding: 5px 12px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.84rem;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-color);
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent-amber);
+    }
+    .dot.online { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      padding: 8px 14px;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-blue), #2563eb);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(58, 134, 255, 0.35);
+    }
+    .btn-primary:hover { transform: translateY(-1px); filter: brightness(1.1); }
+
+    .btn-success {
+      background: linear-gradient(135deg, #059669, var(--accent-green));
+      color: #042f2e;
+      font-weight: 700;
+    }
+    .btn-success:hover { transform: translateY(-1px); filter: brightness(1.08); }
+
+    .btn-warning {
+      background: rgba(255, 190, 11, 0.16);
+      color: var(--accent-amber);
+      border: 1px solid rgba(255, 190, 11, 0.4);
+    }
+    .btn-warning:hover { background: rgba(255, 190, 11, 0.26); }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+    .btn-ghost:hover { background: rgba(255, 255, 255, 0.15); }
+
+    .container {
+      max-width: 1440px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px 24px 36px;
+      flex: 1;
+    }
+
+    .led-grid {
+      display: grid;
+      grid-template-columns: 310px 1fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 1024px) {
+      .led-grid { grid-template-columns: 1fr; }
+    }
+
+    .side-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .timer-box {
+      text-align: center;
+      background: rgba(11, 19, 43, 0.65);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .timer-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .timer-display {
+      font-size: 3.1rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: var(--accent-cyan);
+      line-height: 1.05;
+      text-shadow: 0 0 20px rgba(0, 245, 212, 0.3);
+    }
+
+    .timer-display.urgent {
+      color: var(--accent-pink);
+      text-shadow: 0 0 22px rgba(255, 0, 110, 0.55);
+      animation: pulse 0.9s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.05); }
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .qr-box {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+      color: #0f172a;
+    }
+
+    #qrcode {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 8px auto;
+      min-height: 176px;
+    }
+
+    #qrcode img, #qrcode canvas, #qrcode svg {
+      border-radius: 8px;
+      max-width: 176px;
+      max-height: 176px;
+    }
+
+    .qr-title {
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: #0b132b;
+    }
+
+    .qr-sub {
+      font-size: 0.76rem;
+      color: #475569;
+      margin-top: 4px;
+      word-break: break-all;
+    }
+
+    .vote-counter-box {
+      background: linear-gradient(135deg, rgba(58, 134, 255, 0.18), rgba(0, 245, 212, 0.12));
+      border: 1px solid rgba(0, 245, 212, 0.3);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .vote-counter-box span {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .vote-counter-box strong {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: var(--accent-cyan);
+    }
+
+    .main-stage {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .question-banner {
+      background: linear-gradient(135deg, #1d3557 0%, #1c2541 100%);
+      border: 1px solid rgba(0, 245, 212, 0.25);
+      border-radius: 20px;
+      padding: 20px 26px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+    }
+
+    .question-banner .q-tag {
+      color: var(--accent-amber);
+      font-weight: 700;
+      font-size: 0.84rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 6px;
+    }
+
+    .question-banner h1 {
+      font-size: clamp(1.35rem, 2.3vw, 2rem);
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      flex: 1;
+    }
+
+    @media (max-width: 768px) {
+      .options-grid { grid-template-columns: 1fr; }
+    }
+
+    .option-card {
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: 18px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .option-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(0, 245, 212, 0.45);
+      background: var(--bg-card-hover);
+    }
+
+    .option-card.leading {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 24px rgba(0, 245, 212, 0.22);
+    }
+
+    .card-img-wrap {
+      position: relative;
+      height: 155px;
+      width: 100%;
+      overflow: hidden;
+      background: #0f172a;
+    }
+
+    .card-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+
+    .option-card:hover .card-img-wrap img {
+      transform: scale(1.04);
+    }
+
+    .option-letter {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      background: rgba(11, 19, 43, 0.9);
+      border: 2px solid var(--accent-cyan);
+      color: var(--accent-cyan);
+      font-weight: 800;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .percent-badge {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(11, 19, 43, 0.92);
+      backdrop-filter: blur(6px);
+      padding: 5px 13px;
+      border-radius: 11px;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .card-body {
+      padding: 14px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+
+    .vote-count-text {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 13px;
+      background: rgba(11, 19, 43, 0.85);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .fill-0 { background: linear-gradient(90deg, #3a86ff, #00f5d4); }
+    .fill-1 { background: linear-gradient(90deg, #ffbe0b, #fb5607); }
+    .fill-2 { background: linear-gradient(90deg, #06d6a0, #118ab2); }
+    .fill-3 { background: linear-gradient(90deg, #ff006e, #8338ec); }
+
+    .card-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+      padding-top: 4px;
+      gap: 8px;
+    }
+
+    .btn-explain {
+      background: rgba(0, 245, 212, 0.14);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(0, 245, 212, 0.35);
+      padding: 7px 12px;
+      font-size: 0.84rem;
+      flex: 1;
+      justify-content: center;
+    }
+    .btn-explain:hover {
+      background: rgba(0, 245, 212, 0.25);
+    }
+
+    #student-view {
+      display: none;
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+
+    .student-header {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .student-header h2 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-top: 10px;
+      line-height: 1.35;
+    }
+
+    .student-timer-bar {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 6px 16px;
+      border-radius: 999px;
+      background: rgba(0, 245, 212, 0.15);
+      color: var(--accent-cyan);
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+
+    .student-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .student-choice-btn {
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-align: left;
+      color: var(--text-main);
+      width: 100%;
+    }
+
+    .student-choice-btn img {
+      width: 66px;
+      height: 66px;
+      border-radius: 12px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .student-choice-btn.selected {
+      border-color: var(--accent-cyan);
+      background: rgba(0, 245, 212, 0.16);
+      box-shadow: 0 0 18px rgba(0, 245, 212, 0.25);
+    }
+
+    .student-choice-btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .student-feedback {
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 14px;
+      background: rgba(6, 214, 160, 0.15);
+      border: 1px solid rgba(6, 214, 160, 0.4);
+      text-align: center;
+      display: none;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 10, 24, 0.82);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 20px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #16213e;
+      border: 1px solid rgba(0, 245, 212, 0.35);
+      border-radius: 22px;
+      max-width: 720px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    }
+
+    .modal-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .modal-top h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--accent-cyan);
+    }
+
+    .close-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      justify-content: center;
+      padding: 0;
+      font-size: 1.1rem;
+    }
+
+    .explain-hero {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      background: rgba(11, 19, 43, 0.6);
+      padding: 14px;
+      border-radius: 14px;
+      margin-bottom: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .explain-hero { flex-direction: column; text-align: center; }
+    }
+
+    .explain-hero img {
+      width: 130px;
+      height: 90px;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+
+    .explain-list {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      line-height: 1.6;
+      font-size: 0.98rem;
+    }
+
+    .explain-item {
+      background: rgba(255, 255, 255, 0.05);
+      border-left: 4px solid var(--accent-cyan);
+      padding: 12px 14px;
+      border-radius: 8px;
+    }
+
+    .explain-item strong {
+      color: var(--accent-amber);
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .form-group input, .form-group textarea {
+      width: 100%;
+      background: #0b132b;
+      border: 1px solid var(--border-color);
+      color: #fff;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+    }
+    .code-snippet {
+      background: #070d1f;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 12px;
+      border-radius: 10px;
+      font-family: monospace;
+      font-size: 0.82rem;
+      color: #a5f3fc;
+      overflow-x: auto;
+      white-space: pre;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <header id="main-header">
+    <div class="brand">
+      <span class="badge-tag">Hoạt động 1 • Khởi động</span>
+      <div class="status-pill">
+        <span class="dot" id="conn-dot"></span>
+        <span id="conn-text">Chế độ Demo Cục Bộ (Chưa nối Firebase)</span>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn-ghost" onclick="switchToStudentPreview()">📱 Xem thử giao diện HS</button>
+      <button class="btn-warning" onclick="simulateVotes()">⚡ Giả lập +20 HS bầu</button>
+      <button class="btn-ghost" onclick="openConfigModal()">🔥 Cấu hình Firebase</button>
+      <button class="btn-ghost" onclick="resetPoll()">🔄 Đặt lại phiên</button>
+    </div>
+  </header>
+
+  <main class="container" id="led-view">
+    <div class="led-grid">
+      <aside class="side-panel">
+        <div class="timer-box">
+          <div class="timer-label">Thời gian bình chọn</div>
+          <div class="timer-display" id="timer-text">01:00</div>
+          <div class="timer-controls">
+            <button class="btn-success" id="btn-start-timer" onclick="toggleTimer()">▶ Bắt đầu</button>
+            <button class="btn-ghost" onclick="resetTimer()">↺ 60s</button>
+          </div>
+        </div>
+
+        <div class="qr-box">
+          <div class="qr-title">QUÉT MÃ ĐỂ BÌNH CHỌN</div>
+          <div id="qrcode"></div>
+          <div class="qr-sub" id="qr-url-text">Đang tạo liên kết bình chọn...</div>
+          <button class="btn-ghost" style="margin-top:8px; width:100%; justify-content:center; color:#0f172a; border-color:#cbd5e1; font-size:0.8rem;" onclick="copyStudentLink()">📋 Sao chép link cho HS</button>
+        </div>
+
+        <div class="vote-counter-box">
+          <div>
+            <span>Tổng lượt bình chọn</span>
+            <div style="font-size:0.76rem; color:#94a3b8;" id="poll-state-label">Đang mở bình chọn</div>
+          </div>
+          <strong id="total-votes">0</strong>
+        </div>
+      </aside>
+
+      <section class="main-stage">
+        <div class="question-banner">
+          <div class="q-tag">Câu hỏi khởi động • Dự báo tương lai nghề nghiệp</div>
+          <h1>Theo em, 10 năm nữa nghề nào sẽ thay đổi mạnh nhất?</h1>
+        </div>
+
+        <div class="options-grid" id="options-container"></div>
+      </section>
+    </div>
+  </main>
+
+  <section id="student-view">
+    <div class="student-header">
+      <span class="badge-tag">Bình chọn trực tiếp</span>
+      <h2>Theo em, 10 năm nữa nghề nào sẽ thay đổi mạnh nhất?</h2>
+      <div class="student-timer-bar" id="student-timer-badge">⏱ Thời gian còn lại: 01:00</div>
+    </div>
+
+    <div class="student-options" id="student-options-list"></div>
+
+    <div class="student-feedback" id="student-feedback">
+      <strong style="color: var(--accent-green); font-size: 1.05rem;">✅ Đã ghi nhận bình chọn của em!</strong>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 6px;">Hãy hướng mắt lên màn hình LED để xem kết quả toàn khối và phần giải mã từ MC nhé.</p>
+    </div>
+
+    <div style="text-align:center; margin-top:24px;">
+      <button class="btn-ghost" id="btn-back-led" style="display:none; margin:0 auto;" onclick="backToLedView()">⬅ Quay lại màn hình LED</button>
+    </div>
+  </section>
+
+  <div class="modal-backdrop" id="explain-modal" onclick="closeModalOnBg(event, 'explain-modal')">
+    <div class="modal-card">
+      <div class="modal-top">
+        <div>
+          <span class="badge-tag" style="margin-bottom:8px; display:inline-block;">Góc nhìn chuyên gia & Xu hướng AI</span>
+          <h2 id="modal-job-title">Tên nghề</h2>
+        </div>
+        <button class="close-btn" onclick="closeModal('explain-modal')">✕</button>
+      </div>
+
+      <div class="explain-hero">
+        <img id="modal-job-img" src="" alt="" />
+        <div>
+          <div style="font-size:0.9rem; color:var(--text-muted);">Tỷ lệ học sinh lựa chọn</div>
+          <div style="font-size:2rem; font-weight:800; color:var(--accent-cyan);" id="modal-job-stat">0% (0 phiếu)</div>
+        </div>
+      </div>
+
+      <div class="explain-list" id="modal-job-content"></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="config-modal" onclick="closeModalOnBg(event, 'config-modal')">
+    <div class="modal-card">
+      <div class="modal-top">
+        <div>
+          <span class="badge-tag" style="margin-bottom:8px; display:inline-block;">Kết nối Realtime Database</span>
+          <h2>Cấu hình Firebase cho 150–200 Học Sinh</h2>
+        </div>
+        <button class="close-btn" onclick="closeModal('config-modal')">✕</button>
+      </div>
+
+      <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.5; margin-bottom:14px;">
+        Dán đoạn mã <code>firebaseConfig</code> từ Firebase Console của bạn vào bên dưới (hoặc sửa trực tiếp biến <code>DEFAULT_FIREBASE_CONFIG</code> trong mã nguồn HTML) và đưa file lên GitHub Pages để học sinh quét QR bình chọn đồng bộ.
+      </p>
+
+      <div class="form-group">
+        <label>Dán object cấu hình Firebase (JSON hoặc JS object):</label>
+        <textarea id="firebase-config-input" rows="7" placeholder='{
+  "apiKey": "AIzaSy...",
+  "authDomain": "ten-du-an.firebaseapp.com",
+  "databaseURL": "https://ten-du-an-default-rtdb.asia-southeast1.firebasedatabase.app",
+  "projectId": "ten-du-an",
+  "storageBucket": "ten-du-an.appspot.com",
+  "messagingSenderId": "123456789",
+  "appId": "1:123456789:web:abcdef"
+}'></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Mã phòng / Buổi học (Room ID):</label>
+        <input type="text" id="room-id-input" value="khoi-huong-nghiep-2026" />
+      </div>
+
+      <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:14px; flex-wrap:wrap;">
+        <button class="btn-ghost" onclick="clearSavedFirebase()">Xóa cấu hình lưu</button>
+        <button class="btn-primary" onclick="saveAndConnectFirebase()">Lưu & Kết nối ngay</button>
+      </div>
+
+      <div style="margin-top:18px; border-top:1px solid var(--border-color); padding-top:14px;">
+        <strong style="font-size:0.88rem; color:var(--accent-amber);">📌 Cấu trúc dữ liệu & Rules mẫu trên Firebase Realtime Database:</strong>
+        <div class="code-snippet">{
+  "rules": {
+    "polls": {
+      "$roomId": {
+        ".read": true,
+        ".write": true
+      }
+    }
+  }
+}</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DEFAULT_FIREBASE_CONFIG = {
+      apiKey: "",
+      authDomain: "",
+      databaseURL: "",
+      projectId: "",
+      storageBucket: "",
+      messagingSenderId: "",
+      appId: ""
+    };
+
+    function makeSvgDataUri(bg1, bg2, accent, label, sublabel) {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">
+        <defs>
+          <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="${bg1}"/>
+            <stop offset="100%" stop-color="${bg2}"/>
+          </linearGradient>
+        </defs>
+        <rect width="800" height="450" fill="url(#g)"/>
+        <circle cx="670" cy="90" r="130" fill="${accent}" opacity="0.14"/>
+        <circle cx="120" cy="380" r="160" fill="${accent}" opacity="0.10"/>
+        <rect x="44" y="44" width="712" height="362" rx="22" fill="none" stroke="${accent}" stroke-opacity="0.35" stroke-width="2"/>
+        <text x="72" y="195" fill="#ffffff" font-size="52" font-weight="800" font-family="sans-serif">${label}</text>
+        <text x="72" y="252" fill="${accent}" font-size="26" font-weight="600" font-family="sans-serif">${sublabel}</text>
+      </svg>`;
+      return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
+    }
+
+    const OPTIONS_DATA = [
+      {
+        id: "teacher",
+        letter: "A",
+        title: "Giáo viên",
+        subtitle: "Giáo dục thông minh & Cá nhân hóa học tập",
+        image: makeSvgDataUri("#102542", "#1d3557", "#00f5d4", "GIÁO VIÊN", "AI gia sư cá nhân & Người kiến tạo trải nghiệm"),
+        whyChange: "AI có thể giải bài tập, soạn giáo án, chấm trắc nghiệm và đóng vai gia sư 24/7 cho từng học sinh. Vai trò 'truyền thụ kiến thức một chiều' của giáo viên truyền thống sẽ thay đổi mạnh mẽ.",
+        futureRole: "Giáo viên 10 năm tới chuyển thành người thiết kế trải nghiệm học tập, cố vấn tâm lý, khơi gợi cảm hứng và rèn luyện tư duy phản biện, đạo đức cho học sinh.",
+        skillNeeded: "Ứng dụng công nghệ giáo dục (EdTech), thấu cảm tâm lý, dẫn dắt thảo luận và đặt câu hỏi mở."
+      },
+      {
+        id: "accountant",
+        letter: "B",
+        title: "Kế toán",
+        subtitle: "Tự động hóa dữ liệu & Phân tích tài chính",
+        image: makeSvgDataUri("#2c1e16", "#4a2c18", "#ffbe0b", "KẾ TOÁN", "Tự động hóa sổ sách & Phân tích dữ liệu tài chính"),
+        whyChange: "Các công việc lặp lại như nhập hóa đơn, đối chiếu sổ sách, lập báo cáo thuế cơ bản đang được phần mềm tự động hóa và AI xử lý nhanh hơn, ít sai sót hơn.",
+        futureRole: "Kế toán viên không biến mất mà dịch chuyển lên bậc cao hơn: chuyên gia phân tích dữ liệu tài chính, kiểm soát rủi ro, tư vấn chiến lược dòng tiền và quản trị doanh nghiệp.",
+        skillNeeded: "Phân tích dữ liệu (Data Analytics), làm chủ công cụ AI tài chính, hiểu luật kinh tế và tư duy chiến lược."
+      },
+      {
+        id: "driver",
+        letter: "C",
+        title: "Lái xe",
+        subtitle: "Xe tự hành & Logistics thông minh",
+        image: makeSvgDataUri("#0c2f2e", "#134e4a", "#06d6a0", "LÁI XE & LOGISTICS", "Phương tiện tự hành & Điều phối chuỗi cung ứng"),
+        whyChange: "Sự phát triển của cảm biến, bản đồ số thời gian thực và AI điều khiển phương tiện đang thúc đẩy xe tự hành và hệ thống vận tải cảng biển – logistics thông minh (rất rõ tại thành phố cảng Hải Phòng).",
+        futureRole: "Người lái xe truyền thống dần chuyển sang giám sát điều hành đội xe từ xa, vận hành thiết bị logistics thông minh và xử lý các tình huống đặc thù cần giao tiếp trực tiếp.",
+        skillNeeded: "Vận hành hệ thống điều phối số, kỹ năng an toàn kỹ thuật công nghệ cao và quản lý chuỗi cung ứng."
+      },
+      {
+        id: "designer",
+        letter: "D",
+        title: "Thiết kế",
+        subtitle: "Sáng tạo đồng hành cùng AI tạo sinh",
+        image: makeSvgDataUri("#2d112b", "#4c1d4b", "#ff006e", "THIẾT KẾ SÁNG TẠO", "Định hướng thẩm mỹ & Sáng tạo cùng AI tạo sinh"),
+        whyChange: "AI tạo sinh có thể vẽ minh họa, dựng phối cảnh, tạo mẫu và chỉnh sửa hình ảnh trong vài giây từ câu lệnh, rút ngắn khâu thực thi thủ công lặp lại.",
+        futureRole: "Nhà thiết kế trở thành người định hình ý tưởng độc bản, thấu hiểu cảm xúc văn hóa khách hàng và điều khiển AI tạo ra sản phẩm mang dấu ấn riêng.",
+        skillNeeded: "Tư duy thẩm mỹ, kể chuyện bằng hình ảnh, kỹ năng ra lệnh AI (Prompting) và thấu hiểu trải nghiệm người dùng."
+      }
+    ];
+
+    const TOTAL_SECONDS = 60;
+    let timeLeft = TOTAL_SECONDS;
+    let isRunning = false;
+    let timerInterval = null;
+    let votes = { teacher: 0, accountant: 0, driver: 0, designer: 0 };
+    let db = null;
+    let isFirebaseConnected = false;
+    let roomId = localStorage.getItem("hn_room_id") || "khoi-huong-nghiep-2026";
+    let studentVotedId = localStorage.getItem("hn_voted_" + roomId) || null;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const isStudentMode = urlParams.get("mode") === "vote";
+
+    window.addEventListener("DOMContentLoaded", () => {
+      if (urlParams.get("room")) {
+        roomId = urlParams.get("room");
+      }
+      document.getElementById("room-id-input").value = roomId;
+
+      if (isStudentMode) {
+        enableStudentUI(false);
+      } else {
+        renderLedCards();
+        generateQRCode();
+      }
+
+      initFirebase();
+      updateUI();
+    });
+
+    function getStudentVoteUrl() {
+      const baseUrl = window.location.href.split("?")[0];
+      return `${baseUrl}?mode=vote&room=${encodeURIComponent(roomId)}`;
+    }
+
+    function generateQRCode() {
+      const qrContainer = document.getElementById("qrcode");
+      if (!qrContainer) return;
+      qrContainer.innerHTML = "";
+      const voteUrl = getStudentVoteUrl();
+      document.getElementById("qr-url-text").textContent = voteUrl;
+
+      if (typeof QRCode !== "undefined") {
+        try {
+          new QRCode(qrContainer, {
+            text: voteUrl,
+            width: 176,
+            height: 176,
+            colorDark: "#0b132b",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.M
+          });
+          return;
+        } catch (e) {}
+      }
+
+      // Dự phòng vẽ mã QR trực tiếp bằng Canvas nếu thư viện ngoài chưa tải được
+      renderFallbackCanvasQR(qrContainer, voteUrl);
+    }
+
+    function renderFallbackCanvasQR(container, text) {
+      const size = 176;
+      const cells = 21;
+      const cellSize = Math.floor(size / cells);
+      const canvas = document.createElement("canvas");
+      canvas.width = cells * cellSize;
+      canvas.height = cells * cellSize;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#0b132b";
+
+      const drawFinder = (gx, gy) => {
+        for (let r = 0; r < 7; r++) {
+          for (let c = 0; c < 7; c++) {
+            const border = r === 0 || r === 6 || c === 0 || c === 6;
+            const center = r >= 2 && r <= 4 && c >= 2 && c <= 4;
+            if (border || center) {
+              ctx.fillRect((gx + c) * cellSize, (gy + r) * cellSize, cellSize, cellSize);
+            }
+          }
+        }
+      };
+
+      drawFinder(0, 0);
+      drawFinder(cells - 7, 0);
+      drawFinder(0, cells - 7);
+
+      let hash = 2166136261;
+      for (let i = 0; i < text.length; i++) {
+        hash ^= text.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+      }
+      for (let r = 0; r < cells; r++) {
+        for (let c = 0; c < cells; c++) {
+          const inTopLeft = r < 8 && c < 8;
+          const inTopRight = r < 8 && c >= cells - 8;
+          const inBottomLeft = r >= cells - 8 && c < 8;
+          if (inTopLeft || inTopRight || inBottomLeft) continue;
+          hash = Math.imul(hash ^ (r * 31 + c * 17), 1103515245) + 12345;
+          if (((hash >>> 16) & 1) === 1) {
+            ctx.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
+          }
+        }
+      }
+      container.appendChild(canvas);
+    }
+
+    function copyStudentLink() {
+      const url = getStudentVoteUrl();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          alert("Đã sao chép đường dẫn bình chọn cho học sinh:\n" + url);
+        }).catch(() => prompt("Sao chép đường dẫn bình chọn:", url));
+      } else {
+        prompt("Sao chép đường dẫn bình chọn:", url);
+      }
+    }
+
+    function renderLedCards() {
+      const container = document.getElementById("options-container");
+      if (!container) return;
+      container.innerHTML = OPTIONS_DATA.map((opt, idx) => `
+        <div class="option-card" id="card-${opt.id}">
+          <div class="card-img-wrap">
+            <img src="${opt.image}" alt="${opt.title}" />
+            <div class="option-letter">${opt.letter}</div>
+            <div class="percent-badge" id="pct-${opt.id}">0%</div>
+          </div>
+          <div class="card-body">
+            <div class="card-header-row">
+              <div>
+                <div class="card-title">${opt.title}</div>
+                <div style="font-size:0.8rem; color:var(--text-muted);">${opt.subtitle}</div>
+              </div>
+              <div class="vote-count-text" id="cnt-${opt.id}">0 phiếu</div>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill fill-${idx}" id="bar-${opt.id}" style="width: 0%;"></div>
+            </div>
+            <div class="card-actions">
+              <button class="btn-explain" onclick="openExplainModal('${opt.id}')">💡 Giải mã vì sao thay đổi mạnh</button>
+              <button class="btn-ghost" style="padding:7px 11px; font-size:0.84rem;" title="Cộng 1 phiếu trực tiếp" onclick="castVote('${opt.id}', true)">+1 phiếu</button>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderStudentCards() {
+      const list = document.getElementById("student-options-list");
+      if (!list) return;
+      list.innerHTML = OPTIONS_DATA.map(opt => `
+        <button class="student-choice-btn ${studentVotedId === opt.id ? 'selected' : ''}"
+                id="stu-btn-${opt.id}"
+                onclick="submitStudentVote('${opt.id}')"
+                ${studentVotedId || timeLeft <= 0 ? 'disabled' : ''}>
+          <img src="${opt.image}" alt="${opt.title}" />
+          <div>
+            <div style="font-size:0.78rem; font-weight:700; color:var(--accent-cyan);">Lựa chọn ${opt.letter}</div>
+            <div style="font-size:1.12rem; font-weight:800; margin:2px 0;">${opt.title}</div>
+            <div style="font-size:0.8rem; color:var(--text-muted);">${opt.subtitle}</div>
+          </div>
+        </button>
+      `).join("");
+
+      if (studentVotedId) {
+        document.getElementById("student-feedback").style.display = "block";
+      }
+    }
+
+    function initFirebase() {
+      let config = DEFAULT_FIREBASE_CONFIG;
+      const savedConfigStr = localStorage.getItem("hn_firebase_config");
+      if (savedConfigStr) {
+        try {
+          config = JSON.parse(savedConfigStr);
+          document.getElementById("firebase-config-input").value = JSON.stringify(config, null, 2);
+        } catch (e) {}
+      }
+
+      if (!config || !config.databaseURL || !config.apiKey || typeof firebase === "undefined") {
+        setConnectionStatus(false, "Chế độ Demo Cục Bộ (Chưa nối Firebase)");
+        loadLocalDemoVotes();
+        return;
+      }
+
+      try {
+        if (!firebase.apps.length) {
+          firebase.initializeApp(config);
+        }
+        db = firebase.database();
+        const pollRef = db.ref(`polls/${roomId}`);
+
+        pollRef.on("value", (snapshot) => {
+          const data = snapshot.val();
+          setConnectionStatus(true, `Đã kết nối Firebase • Phòng: ${roomId}`);
+          if (data) {
+            if (data.votes) {
+              votes = {
+                teacher: data.votes.teacher || 0,
+                accountant: data.votes.accountant || 0,
+                driver: data.votes.driver || 0,
+                designer: data.votes.designer || 0
+              };
+            }
+            if (typeof data.timeLeft === "number") {
+              timeLeft = data.timeLeft;
+            }
+            if (typeof data.isRunning === "boolean") {
+              isRunning = data.isRunning;
+            }
+          } else {
+            pollRef.set({
+              votes: { teacher: 0, accountant: 0, driver: 0, designer: 0 },
+              timeLeft: TOTAL_SECONDS,
+              isRunning: false
+            });
+          }
+          updateUI();
+        }, (err) => {
+          console.error(err);
+          setConnectionStatus(false, "Lỗi quyền truy cập Firebase (Kiểm tra Rules)");
+        });
+      } catch (error) {
+        console.error(error);
+        setConnectionStatus(false, "Cấu hình Firebase chưa hợp lệ");
+      }
+    }
+
+    function setConnectionStatus(online, text) {
+      isFirebaseConnected = online;
+      const dot = document.getElementById("conn-dot");
+      const label = document.getElementById("conn-text");
+      if (dot && label) {
+        dot.className = online ? "dot online" : "dot";
+        label.textContent = text;
+      }
+    }
+
+    function loadLocalDemoVotes() {
+      const saved = localStorage.getItem("hn_demo_votes_" + roomId);
+      if (saved) {
+        try { votes = JSON.parse(saved); } catch (e) {}
+      }
+    }
+
+    function syncStateToBackend() {
+      if (isFirebaseConnected && db) {
+        db.ref(`polls/${roomId}`).update({
+          timeLeft: timeLeft,
+          isRunning: isRunning
+        });
+      }
+    }
+
+    function castVote(optionId, isAdminManual = false) {
+      if (timeLeft <= 0 && !isAdminManual) {
+        alert("Đã hết thời gian 1 phút bình chọn!");
+        return;
+      }
+
+      if (isFirebaseConnected && db) {
+        db.ref(`polls/${roomId}/votes/${optionId}`).transaction((current) => (current || 0) + 1);
+      } else {
+        votes[optionId] = (votes[optionId] || 0) + 1;
+        localStorage.setItem("hn_demo_votes_" + roomId, JSON.stringify(votes));
+        updateUI();
+      }
+    }
+
+    function submitStudentVote(optionId) {
+      if (studentVotedId) return;
+      if (timeLeft <= 0) {
+        alert("Đã hết thời gian bình chọn!");
+        return;
+      }
+      studentVotedId = optionId;
+      localStorage.setItem("hn_voted_" + roomId, optionId);
+      castVote(optionId, false);
+      renderStudentCards();
+    }
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60).toString().padStart(2, "0");
+      const s = (sec % 60).toString().padStart(2, "0");
+      return `${m}:${s}`;
+    }
+
+    function toggleTimer() {
+      if (timeLeft <= 0) timeLeft = TOTAL_SECONDS;
+      isRunning = !isRunning;
+
+      if (isRunning) {
+        startLocalTicker();
+      } else {
+        clearInterval(timerInterval);
+      }
+      syncStateToBackend();
+      updateUI();
+    }
+
+    function startLocalTicker() {
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        if (!isRunning) {
+          clearInterval(timerInterval);
+          return;
+        }
+        if (timeLeft > 0) {
+          timeLeft--;
+          updateTimerDisplayOnly();
+          if (isFirebaseConnected && db && !isStudentMode) {
+            db.ref(`polls/${roomId}/timeLeft`).set(timeLeft);
+          }
+        } else {
+          isRunning = false;
+          clearInterval(timerInterval);
+          syncStateToBackend();
+          updateUI();
+        }
+      }, 1000);
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      isRunning = false;
+      timeLeft = TOTAL_SECONDS;
+      syncStateToBackend();
+      updateUI();
+    }
+
+    function resetPoll() {
+      if (!confirm("Đặt lại toàn bộ số phiếu về 0 và đồng hồ về 60 giây?")) return;
+      clearInterval(timerInterval);
+      isRunning = false;
+      timeLeft = TOTAL_SECONDS;
+      votes = { teacher: 0, accountant: 0, driver: 0, designer: 0 };
+      localStorage.removeItem("hn_voted_" + roomId);
+      studentVotedId = null;
+
+      if (isFirebaseConnected && db) {
+        db.ref(`polls/${roomId}`).set({
+          votes: votes,
+          timeLeft: TOTAL_SECONDS,
+          isRunning: false
+        });
+      } else {
+        localStorage.setItem("hn_demo_votes_" + roomId, JSON.stringify(votes));
+        updateUI();
+      }
+    }
+
+    function simulateVotes() {
+      const keys = ["teacher", "accountant", "driver", "designer"];
+      const weights = [0.22, 0.34, 0.24, 0.20];
+      for (let i = 0; i < 20; i++) {
+        const r = Math.random();
+        let acc = 0;
+        let chosen = keys[0];
+        for (let j = 0; j < keys.length; j++) {
+          acc += weights[j];
+          if (r <= acc) { chosen = keys[j]; break; }
+        }
+        votes[chosen]++;
+      }
+      if (isFirebaseConnected && db) {
+        db.ref(`polls/${roomId}/votes`).set(votes);
+      } else {
+        localStorage.setItem("hn_demo_votes_" + roomId, JSON.stringify(votes));
+        updateUI();
+      }
+    }
+
+    function updateTimerDisplayOnly() {
+      const formatted = formatTime(timeLeft);
+      const timerEl = document.getElementById("timer-text");
+      if (timerEl) {
+        timerEl.textContent = formatted;
+        timerEl.classList.toggle("urgent", timeLeft <= 10 && timeLeft > 0);
+      }
+      const stuBadge = document.getElementById("student-timer-badge");
+      if (stuBadge) {
+        stuBadge.textContent = timeLeft > 0 ? `⏱ Thời gian còn lại: ${formatted}` : "🔒 Đã hết thời gian bình chọn";
+      }
+    }
+
+    function updateUI() {
+      updateTimerDisplayOnly();
+
+      const startBtn = document.getElementById("btn-start-timer");
+      if (startBtn) {
+        startBtn.textContent = isRunning ? "⏸ Tạm dừng" : (timeLeft === 0 ? "▶ Chạy lại" : "▶ Bắt đầu");
+      }
+
+      const stateLabel = document.getElementById("poll-state-label");
+      if (stateLabel) {
+        stateLabel.textContent = timeLeft === 0 ? "Đã khóa bình chọn (Hết giờ)" : (isRunning ? "Đang đếm ngược..." : "Sẵn sàng nhận phiếu");
+      }
+
+      const total = Object.values(votes).reduce((a, b) => a + b, 0);
+      const totalEl = document.getElementById("total-votes");
+      if (totalEl) totalEl.textContent = total;
+
+      const maxVotes = Math.max(...Object.values(votes));
+
+      OPTIONS_DATA.forEach(opt => {
+        const count = votes[opt.id] || 0;
+        const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+
+        const pctEl = document.getElementById(`pct-${opt.id}`);
+        const cntEl = document.getElementById(`cnt-${opt.id}`);
+        const barEl = document.getElementById(`bar-${opt.id}`);
+        const cardEl = document.getElementById(`card-${opt.id}`);
+
+        if (pctEl) pctEl.textContent = `${pct}%`;
+        if (cntEl) cntEl.textContent = `${count} phiếu`;
+        if (barEl) barEl.style.width = `${pct}%`;
+        if (cardEl) {
+          cardEl.classList.toggle("leading", total > 0 && count === maxVotes);
+        }
+      });
+
+      if (document.getElementById("student-view").style.display === "block") {
+        renderStudentCards();
+      }
+    }
+
+    function enableStudentUI(showBackBtn) {
+      document.getElementById("main-header").style.display = "none";
+      document.getElementById("led-view").style.display = "none";
+      document.getElementById("student-view").style.display = "block";
+      document.getElementById("btn-back-led").style.display = showBackBtn ? "inline-flex" : "none";
+      renderStudentCards();
+    }
+
+    function switchToStudentPreview() {
+      enableStudentUI(true);
+    }
+
+    function backToLedView() {
+      document.getElementById("main-header").style.display = "flex";
+      document.getElementById("led-view").style.display = "block";
+      document.getElementById("student-view").style.display = "none";
+      renderLedCards();
+      generateQRCode();
+      updateUI();
+    }
+
+    function openExplainModal(optionId) {
+      const opt = OPTIONS_DATA.find(item => item.id === optionId);
+      if (!opt) return;
+      const total = Object.values(votes).reduce((a, b) => a + b, 0);
+      const count = votes[opt.id] || 0;
+      const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+
+      document.getElementById("modal-job-title").textContent = `${opt.letter}. Nghề ${opt.title}`;
+      document.getElementById("modal-job-img").src = opt.image;
+      document.getElementById("modal-job-stat").textContent = `${pct}% (${count} phiếu)`;
+
+      document.getElementById("modal-job-content").innerHTML = `
+        <div class="explain-item">
+          <strong>1. Vì sao nghề ${opt.title} sẽ thay đổi mạnh nhất trong 10 năm tới?</strong>
+          <span>${opt.whyChange}</span>
+        </div>
+        <div class="explain-item" style="border-left-color: var(--accent-green);">
+          <strong>2. Người làm nghề sẽ dịch chuyển như thế nào?</strong>
+          <span>${opt.futureRole}</span>
+        </div>
+        <div class="explain-item" style="border-left-color: var(--accent-amber);">
+          <strong>3. Kỹ năng học sinh cần chuẩn bị từ hôm nay:</strong>
+          <span>${opt.skillNeeded}</span>
+        </div>
+      `;
+
+      document.getElementById("explain-modal").classList.add("open");
+    }
+
+    function openConfigModal() {
+      document.getElementById("config-modal").classList.add("open");
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove("open");
+    }
+
+    function closeModalOnBg(event, id) {
+      if (event.target.id === id) {
+        closeModal(id);
+      }
+    }
+
+    function saveAndConnectFirebase() {
+      const raw = document.getElementById("firebase-config-input").value.trim();
+      const newRoom = document.getElementById("room-id-input").value.trim() || "khoi-huong-nghiep-2026";
+      roomId = newRoom;
+      localStorage.setItem("hn_room_id", roomId);
+
+      if (raw) {
+        try {
+          const parsed = Function('"use strict";return (' + raw + ')')();
+          localStorage.setItem("hn_firebase_config", JSON.stringify(parsed));
+          alert("Đã lưu cấu hình Firebase! Trang sẽ tải lại để kết nối.");
+          location.reload();
+        } catch (e) {
+          alert("Định dạng cấu hình chưa đúng. Vui lòng dán nguyên khối { apiKey: ..., databaseURL: ... } từ Firebase Console.");
+        }
+      } else {
+        generateQRCode();
+        closeModal("config-modal");
+      }
+    }
+
+    function clearSavedFirebase() {
+      localStorage.removeItem("hn_firebase_config");
+      alert("Đã xóa cấu hình đã lưu. Trang sẽ quay về chế độ Demo cục bộ.");
+      location.reload();
+    }
+  </script>
+</body>
+</html>
